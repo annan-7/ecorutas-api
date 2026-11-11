@@ -1,31 +1,16 @@
 services:
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: ecorutas
-      POSTGRES_USER: ecorutas
-      POSTGRES_PASSWORD: ecorutas
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ecorutas"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   api:
     build: .
     environment:
-      DATABASE_URL: postgresql+asyncpg://ecorutas:ecorutas@db:5432/ecorutas
+      DATABASE_URL: sqlite+aiosqlite:////data/ecorutas.db
       ENVIRONMENT: production
+      INITIALIZE_DATABASE: "true"
+      SEED_DATABASE: "true"
+      CORS_ORIGINS: http://localhost:5173
     ports:
       - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
+    volumes:
+      - sqlite_data:/data
 
 volumes:
-  postgres_data:
-
+  sqlite_data:

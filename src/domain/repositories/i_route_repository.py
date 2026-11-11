@@ -10,6 +10,9 @@ class IRouteRepository(ABC):
     async def save(self, route: Route) -> Route: ...
 
     @abstractmethod
+    async def save_many(self, routes: list[Route]) -> list[Route]: ...
+
+    @abstractmethod
     async def find_by_id(self, route_id: UUID) -> Route | None: ...
 
     @abstractmethod

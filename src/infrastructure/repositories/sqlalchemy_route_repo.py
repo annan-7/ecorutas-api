@@ -28,6 +28,16 @@ class SQLAlchemyRouteRepository(IRouteRepository):
         await self._session.refresh(model)
         return self._to_entity(model)
 
+    async def save_many(self, routes: list[Route]) -> list[Route]:
+        models = [self._to_model(route) for route in routes]
+        self._session.add_all(models)
+        try:
+            await self._session.commit()
+        except IntegrityError as exc:
+            await self._session.rollback()
+            raise DuplicateRouteError("Una o más rutas ya existen") from exc
+        return [self._to_entity(model) for model in models]
+
     async def find_by_id(self, route_id: UUID) -> Route | None:
         model = await self._session.get(RouteModel, route_id)
         return self._to_entity(model) if model else None

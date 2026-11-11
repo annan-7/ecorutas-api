@@ -1,7 +1,7 @@
 # ECORUTAS API
 
-Backend FastAPI para rutas de naturaleza en Chile. Usa DDD, SQLAlchemy async,
-PostgreSQL en producción y SQLite durante desarrollo.
+Backend FastAPI para rutas de naturaleza en Chile. Usa DDD, SQLAlchemy async
+y SQLite.
 
 ## Inicio local
 
@@ -21,9 +21,33 @@ Documentación: <http://localhost:8000/docs>
 
 ```bash
 docker compose up --build
-docker compose exec api alembic upgrade head
-docker compose exec api python -m src.infrastructure.seeders.run_seeders
 ```
+
+El contenedor crea tablas y 65 rutas automáticamente. El volumen `sqlite_data`
+conserva la base entre reinicios.
+
+## Vercel con SQLite
+
+Vercel solo permite escritura en `/tmp`. Usa estas variables en Production:
+
+```env
+APP_NAME=ECORUTAS API
+ENVIRONMENT=production
+DEBUG=false
+DATABASE_URL=sqlite+aiosqlite:////tmp/ecorutas.db
+API_V1_PREFIX=/api/v1
+CORS_ORIGINS=https://proyecto-front-end.vercel.app
+INITIALIZE_DATABASE=true
+SEED_DATABASE=true
+```
+
+Reemplaza `CORS_ORIGINS` por el dominio exacto del frontend. `api/index.py` y
+`vercel.json` exponen FastAPI como función Python. Cada instancia crea tablas y
+65 rutas iniciales.
+
+Advertencia: `/tmp` no es almacenamiento persistente. Vercel puede borrar la
+base en despliegues, reinicios o nuevas instancias. Altas y eliminaciones no
+son durables. SQLite persistente requiere un host con disco, como Render.
 
 ## Endpoints
 

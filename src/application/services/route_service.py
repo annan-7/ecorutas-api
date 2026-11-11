@@ -24,8 +24,24 @@ class RouteService:
     async def create_route(self, dto: CreateRouteDTO) -> RouteResponseDTO:
         if await self._repository.search_by_name(dto.name):
             raise DuplicateRouteError(f"Ya existe una ruta llamada '{dto.name}'")
+        route = self._build_route(dto)
+        return self._map_to_dto(await self._repository.save(route))
+
+    async def create_missing_routes(
+        self, dtos: list[CreateRouteDTO]
+    ) -> tuple[int, int]:
+        existing = await self._repository.find_all(0, 10_000)
+        existing_names = {route.name.casefold() for route in existing}
+        missing = [dto for dto in dtos if dto.name.casefold() not in existing_names]
+        if missing:
+            await self._repository.save_many(
+                [self._build_route(dto) for dto in missing]
+            )
+        return len(missing), len(dtos) - len(missing)
+
+    def _build_route(self, dto: CreateRouteDTO) -> Route:
         coordinates = self._coordinates(dto.latitude, dto.longitude)
-        route = Route(
+        return Route(
             name=dto.name,
             description=dto.description,
             interesting_fact=dto.interesting_fact,
@@ -38,7 +54,6 @@ class RouteService:
             coordinates=coordinates,
             altitude_meters=dto.altitude_meters,
         )
-        return self._map_to_dto(await self._repository.save(route))
 
     async def get_route(self, route_id: UUID) -> RouteResponseDTO:
         route = await self._repository.find_by_id(route_id)

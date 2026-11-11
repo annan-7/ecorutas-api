@@ -100,12 +100,4 @@ def build_seed_data() -> list[CreateRouteDTO]:
 
 
 async def seed_routes(service: RouteService) -> tuple[int, int]:
-    created = 0
-    skipped = 0
-    for dto in build_seed_data():
-        if await service._repository.search_by_name(dto.name):
-            skipped += 1
-            continue
-        await service.create_route(dto)
-        created += 1
-    return created, skipped
+    return await service.create_missing_routes(build_seed_data())

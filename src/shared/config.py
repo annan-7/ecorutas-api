@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./ecorutas.db"
     api_v1_prefix: str = "/api/v1"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    initialize_database: bool = True
+    seed_database: bool = False
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
