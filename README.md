@@ -67,3 +67,26 @@ on the deployed domain. `/` and `/api/index` are not application endpoints;
 404 responses there are expected. A successful deployment should report
 `{"status":"ok"}` at `/health`. Verify the deployment uses the latest main
 commit rather than redeploying an older deployment.
+
+## Route photographs
+
+`src/data/routes.json` is the single source for image URLs, including the
+compatibility seeder. Each route has a distinct Wikimedia Commons photograph.
+`src/data/image_credits.json` records the source page, photographer, license,
+and original description for each route. Some less-documented trails use a
+representative photograph of the surrounding park or region; the credit's
+`depicts` field makes that distinction explicit.
+
+When displaying these photographs, show the photographer credit and link the
+source and license as required by the individual license. API access is public;
+image reuse remains subject to those licenses. The photographs are externally
+hosted and their continued availability is outside this API's control.
+
+To check every image with real HTTP GET requests, content-type, image signatures,
+and duplicate-content detection, run:
+
+```bash
+python scripts/check_route_images.py
+```
+
+This check runs separately from application startup and the offline test suite.
