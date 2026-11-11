@@ -4,12 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.application.services.route_service import RouteService
-from src.infrastructure.database.connection import async_session, create_tables
-from src.infrastructure.repositories.sqlalchemy_route_repo import (
-    SQLAlchemyRouteRepository,
-)
-from src.infrastructure.seeders.routes_seeder import seed_routes
+from src.infrastructure.database.bootstrap import ensure_database_ready
 from src.presentation.exception_handlers import register_exception_handlers
 from src.presentation.routers.routes_router import router as routes_router
 from src.presentation.schemas.responses import HealthResponse
@@ -18,11 +13,7 @@ from src.shared.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    if settings.initialize_database:
-        await create_tables()
-    if settings.seed_database:
-        async with async_session() as session:
-            await seed_routes(RouteService(SQLAlchemyRouteRepository(session)))
+    await ensure_database_ready()
     yield
 
 

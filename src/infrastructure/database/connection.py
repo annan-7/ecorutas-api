@@ -20,6 +20,9 @@ async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
+    from src.infrastructure.database.bootstrap import ensure_database_ready
+
+    await ensure_database_ready()
     async with async_session() as session:
         yield session
 

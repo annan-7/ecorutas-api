@@ -43,7 +43,8 @@ SEED_DATABASE=true
 
 Reemplaza `CORS_ORIGINS` por el dominio exacto del frontend. `api/index.py` y
 `vercel.json` exponen FastAPI como función Python. Cada instancia crea tablas y
-65 rutas iniciales.
+65 rutas iniciales. La inicialización también se ejecuta antes de abrir la primera
+sesión de base de datos, incluso si el runtime no envía eventos ASGI lifespan.
 
 Advertencia: `/tmp` no es almacenamiento persistente. Vercel puede borrar la
 base en despliegues, reinicios o nuevas instancias. Altas y eliminaciones no
