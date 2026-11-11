@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 
 class RouteResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, frozen=True)
 
     id: UUID
     name: str

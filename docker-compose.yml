@@ -1,16 +1,5 @@
 services:
   api:
     build: .
-    environment:
-      DATABASE_URL: sqlite+aiosqlite:////data/ecorutas.db
-      ENVIRONMENT: production
-      INITIALIZE_DATABASE: "true"
-      SEED_DATABASE: "true"
-      CORS_ORIGINS: http://localhost:5173
     ports:
       - "8000:8000"
-    volumes:
-      - sqlite_data:/data
-
-volumes:
-  sqlite_data:
