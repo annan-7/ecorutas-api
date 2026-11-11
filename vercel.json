@@ -1,15 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index"
-    }
-  ],
+  "framework": "fastapi",
   "functions": {
-    "api/index.py": {
+    "src/main.py": {
       "maxDuration": 30,
-      "includeFiles": "src/**"
+      "includeFiles": "src/data/routes.json"
     }
   }
 }

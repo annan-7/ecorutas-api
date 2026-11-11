@@ -36,9 +36,13 @@ CORS allows any origin by default, without credentials. Optionally set
 ## Vercel
 
 Import this repository as a Python project with the repository root as the root
-directory. `api/index.py` exports the app; `vercel.json` routes requests to it.
+directory. `vercel.json` explicitly selects the native FastAPI framework.
+`[tool.vercel]` in `pyproject.toml` selects `src.main:app`; Vercel routes
+requests directly to this app without a catch-all rewrite. `api/index.py` is
+retained only as a compatible import entry point.
 `requirements.txt` installs the runtime dependencies. No database or secrets
-are needed. Remove obsolete DATABASE_URL, INITIALIZE_DATABASE, and SEED_DATABASE
+are needed. Leave Build Command and Output Directory overrides unset, and use
+the repository root as Root Directory. Remove obsolete DATABASE_URL, INITIALIZE_DATABASE, and SEED_DATABASE
 settings; they are no longer used. Use `CORS_ORIGINS=*` for public browser access.
 
 The JSON catalog is loaded relative to the Python package, independent of the
@@ -57,3 +61,9 @@ pytest --cov=src
 ```
 
 Docker is optional: `docker compose up --build` starts the same static API.
+
+For deployment validation, request `/health` and `/api/v1/routes?limit=100`
+on the deployed domain. `/` and `/api/index` are not application endpoints;
+404 responses there are expected. A successful deployment should report
+`{"status":"ok"}` at `/health`. Verify the deployment uses the latest main
+commit rather than redeploying an older deployment.
